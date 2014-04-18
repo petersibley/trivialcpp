@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <exception>
-#include <boost/foreach.hpp>
 #include <cmath>
 #include <algorithm>
 #include <functional>
@@ -9,7 +8,6 @@
 
 
 using namespace std;
-using namespace boost;
 
 int main(int argc, char** argv)
 {
