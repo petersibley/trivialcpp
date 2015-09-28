@@ -7,7 +7,7 @@ IFLAGS= -I/usr/include/ -I/usr/local/include
 LIBS= -L/usr/lib -L/usr/local/lib -lm -lc++  -lboost_timer-mt -lboost_system-mt
 
 #CFLAGS=  -g -D_DEBUG
-CFLAGS=   -O3 -std=c++11 -stdlib=libc++
+CFLAGS=   -O3 -std=c++14 -stdlib=libc++
 PROGRAM=test
 
 OBJECTS = $(patsubst %.cpp,%.o,$(SOURCES))
