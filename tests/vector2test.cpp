@@ -131,6 +131,13 @@ TEST_CASE("memfun","[vector2f]") {
         REQUIRE(x.cwiseSqrt().x() == 2.0);
         REQUIRE(x.cwiseSqrt().y() == 4.0);
     }
+    {
+        auto x = Vector2f{4.0, 16.0};
+        REQUIRE(x.minCoeff() == 4.0);
+        REQUIRE(x.maxCoeff() == 16.0);
+    }
+
+
 
 }
 
