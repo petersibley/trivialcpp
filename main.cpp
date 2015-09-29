@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <exception>
 #include <cmath>
@@ -6,7 +7,6 @@
 #include <functional>
 #include <numeric>
 #include <map>
-
 
 using namespace std;
 
@@ -107,23 +107,31 @@ int main(int argc, char** argv)
                     auto scalarType = pair.first;
                     auto scalarShortname = pair.second;
 
-                    auto apply = [=](const auto & s)  {
+                    auto headerPath = name + to_string(d) + scalarShortname + ".h";
+                    ofstream headerOut;
+                    headerOut.open(headerPath);
+                    auto cppPath = name + to_string(d) + scalarShortname + ".cpp";
+                    ofstream cppOut;
+                    cppOut.open(cppPath);
+
+                    cout << "HEADER : " << headerPath << " CPP : " << cppPath << "\n";
+                    auto apply = [=](const auto & s, auto & ss)  {
                         auto pp = find_all_replace(s, "CLASSNAME", name); 
                         pp = find_all_replace(pp, "DIMENSION",to_string(d));
                         pp = find_all_replace(pp, "SHORTSCALARNAME",scalarShortname);
                         pp = find_all_replace(pp, "SCALAR",scalarType);
-                        cout << pp;
+                        ss << pp;
                    };
 
-                   apply(header_header);
+                   apply(header_header, headerOut);
                    auto & l  = methods[d - 1];
                    for(int i = 0 ; i < l.size(); ++i) {
                        auto entry = l[i];
                         auto gg = find_all_replace(header_getter_decl, "GETTERNAME",entry);
-                        cout << gg;
+                        headerOut << gg;
                    }
-                   apply(header_footer);
-                   apply(cpp_header);
+                   apply(header_footer, headerOut);
+                   apply(cpp_header, cppOut);
                    for(int i = 0 ; i < l.size(); ++i) {
                        auto entry = l[i];
                         auto gg = find_all_replace(cpp_getter_decl,"GETTERNAME",entry);
@@ -131,8 +139,10 @@ int main(int argc, char** argv)
                         gg = find_all_replace(gg, "DIMENSION",to_string(d));
                         gg = find_all_replace(gg, "SHORTSCALARNAME",scalarShortname);
                         gg = find_all_replace(gg, "DIM", to_string(i));
-                        cout << gg;
+                        cppOut << gg;
                    }
+                   headerOut.close();
+                   cppOut.close();
                 }
             }
         }
