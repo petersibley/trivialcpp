@@ -105,22 +105,21 @@ int main(int argc, char** argv)
 {
     try
     {
-
         auto classname = {"Vector"};
         auto dimensions = {1,2,3,4};
         auto scalar = std::map<std::string, std::string>{{{"float", "f"}, {"double","d"}, {"int", "i"}}};
         auto methods = std::vector<std::vector<std::string>>{{{"x"},{"x","y"},{"x","y","z"},{"x","y","z","w"}}};
-
+        auto pathPrefix = std::string{"elm/"};
         for (auto & name : classname) {
                 for (auto &pair : scalar) {
             for (auto &d : dimensions) {
                     auto scalarType = pair.first;
                     auto scalarShortname = pair.second;
 
-                    auto headerPath = name + to_string(d) + scalarShortname + ".h";
+                    auto headerPath = pathPrefix + name + to_string(d) + scalarShortname + ".h";
                     ofstream headerOut;
                     headerOut.open(headerPath);
-                    auto cppPath = name + to_string(d) + scalarShortname + ".cpp";
+                    auto cppPath = pathPrefix + name + to_string(d) + scalarShortname + ".cpp";
                     ofstream cppOut;
                     cppOut.open(cppPath);
 
