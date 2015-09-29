@@ -36,3 +36,19 @@ TEST_CASE("Static members","[vector2f]") {
     REQUIRE(ones.x() == 1.0f);
     REQUIRE(ones.y() == 1.0f);
 }
+
+
+TEST_CASE("[]","[vector2f]") {
+
+    // make sure default ctors do something sane
+    auto x = Vector2f{0.0,0.0};
+    x[0] = 1.0f;
+    REQUIRE(x.x() == 1.0f);
+    REQUIRE(x.y() == 0.0f);
+    //makesure const version plays nicely
+    x[1] = 10.0f;
+    const auto y = x; 
+    const auto & xY = y[1];
+    REQUIRE(xY == 10.0f);
+}
+

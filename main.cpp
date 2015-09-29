@@ -51,7 +51,9 @@ class CLASSNAMEDIMENSIONSHORTSCALARNAME
     ScalarT* data(); 
     explicit CLASSNAMEDIMENSIONSHORTSCALARNAME(const ScalarT * data);
 
-    // 
+    // subscripting.
+    ScalarT& operator[](size_t);
+    const ScalarT& operator[](size_t) const;
 
 
 
@@ -96,6 +98,17 @@ CLASSNAMEDIMENSIONSHORTSCALARNAME::CLASSNAMEDIMENSIONSHORTSCALARNAME(const CLASS
         _data[i] = *(d+i);
     }
 }    
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME::ScalarT& CLASSNAMEDIMENSIONSHORTSCALARNAME::operator[](size_t pos)
+{
+    // TODO add debug asserts for checks builds.
+    return _data[pos];
+}
+const CLASSNAMEDIMENSIONSHORTSCALARNAME::ScalarT& CLASSNAMEDIMENSIONSHORTSCALARNAME::operator[](size_t pos) const
+{
+    // TODO add debug asserts for checks builds.
+    return _data[pos];
+}
 )";
 
 const char *header_getter_decl = R"(
@@ -141,11 +154,6 @@ CLASSNAMEDIMENSIONSHORTSCALARNAME CLASSNAMEDIMENSIONSHORTSCALARNAME::Ones() {
 }
 }    
 )";
-
-
-
-
-
 
 
 int main(int argc, char** argv)
