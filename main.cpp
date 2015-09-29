@@ -36,6 +36,7 @@ class CLASSNAMEDIMENSIONSHORTSCALARNAME
     public:
     // Aliases
     using ScalarT = SCALAR;
+    using FloatingPointScalarT = FLOATINGTYPENAME;
     static constexpr size_t Dimension = DIMENSION;
 
 
@@ -55,6 +56,39 @@ class CLASSNAMEDIMENSIONSHORTSCALARNAME
     ScalarT& operator[](size_t);
     const ScalarT& operator[](size_t) const;
 
+    // basic members
+    CLASSNAMEDIMENSIONSHORTSCALARNAME& operator+=(const CLASSNAMEDIMENSIONSHORTSCALARNAME & vec);
+    CLASSNAMEDIMENSIONSHORTSCALARNAME& operator-=(const CLASSNAMEDIMENSIONSHORTSCALARNAME & vec);
+    CLASSNAMEDIMENSIONSHORTSCALARNAME& operator*=(ScalarT scalar);
+    CLASSNAMEDIMENSIONSHORTSCALARNAME& operator/=(ScalarT scalar);
+
+    // member functions
+    FloatingPointScalarT dot(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const;
+    FloatingPointScalarT norm() const;
+    FloatingPointScalarT squaredNorm() const;
+
+    void normalize();
+    CLASSNAMEDIMENSIONSHORTSCALARNAME normalized() const;
+
+    CLASSNAMEDIMENSIONSHORTSCALARNAME cwiseProduct(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const;
+    CLASSNAMEDIMENSIONSHORTSCALARNAME cwiseQuotient(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const;
+    CLASSNAMEDIMENSIONSHORTSCALARNAME cwiseMax(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const;
+    CLASSNAMEDIMENSIONSHORTSCALARNAME cwiseMin(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const;
+    CLASSNAMEDIMENSIONSHORTSCALARNAME cwiseAbs() const;
+    CLASSNAMEDIMENSIONSHORTSCALARNAME cwiseSqrt() const;
+    ScalarT minCoeff() const;
+    ScalarT maxCoeff() const;
+
+    
+    // cross in 3D
+    // minCoeff
+    // maxCoeff
+
+    // Matrix2-4
+    // Affine
+    // Rotation 
+    // Scale
+    // Translation
 
 
     private:
@@ -67,6 +101,11 @@ const char *header_footer = R"(
     static CLASSNAMEDIMENSIONSHORTSCALARNAME Zero();
     static CLASSNAMEDIMENSIONSHORTSCALARNAME Ones();
 };
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME operator+(const CLASSNAMEDIMENSIONSHORTSCALARNAME & a, const CLASSNAMEDIMENSIONSHORTSCALARNAME & b);
+CLASSNAMEDIMENSIONSHORTSCALARNAME operator-(const CLASSNAMEDIMENSIONSHORTSCALARNAME & a, const CLASSNAMEDIMENSIONSHORTSCALARNAME & b);
+
+
 }
 }
 )";
@@ -75,6 +114,7 @@ const char *header_footer = R"(
 const char* cpp_header = R"(
 #include "CLASSNAMEDIMENSIONSHORTSCALARNAME.h"
 #include <cassert>
+#include <cmath>
 
 using namespace std;
 namespace fiftythree 
@@ -109,6 +149,140 @@ const CLASSNAMEDIMENSIONSHORTSCALARNAME::ScalarT& CLASSNAMEDIMENSIONSHORTSCALARN
     // TODO add debug asserts for checks builds.
     return _data[pos];
 }
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME& CLASSNAMEDIMENSIONSHORTSCALARNAME::operator+=(const CLASSNAMEDIMENSIONSHORTSCALARNAME & vec) {
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        _data[i] += vec._data[i];
+    }
+    return *this;
+}
+CLASSNAMEDIMENSIONSHORTSCALARNAME& CLASSNAMEDIMENSIONSHORTSCALARNAME::operator-=(const CLASSNAMEDIMENSIONSHORTSCALARNAME & vec) {
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        _data[i] -= vec._data[i];
+    }
+    return *this;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME operator+(const CLASSNAMEDIMENSIONSHORTSCALARNAME & a, const CLASSNAMEDIMENSIONSHORTSCALARNAME & b) 
+{
+    CLASSNAMEDIMENSIONSHORTSCALARNAME result(a);
+    result += b;
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME operator-(const CLASSNAMEDIMENSIONSHORTSCALARNAME & a, const CLASSNAMEDIMENSIONSHORTSCALARNAME & b) 
+{
+    CLASSNAMEDIMENSIONSHORTSCALARNAME result(a);
+    result -= b;
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME& CLASSNAMEDIMENSIONSHORTSCALARNAME::operator*=(ScalarT scalar) {
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        _data[i] *= scalar;
+    }
+    return *this;
+}
+CLASSNAMEDIMENSIONSHORTSCALARNAME& CLASSNAMEDIMENSIONSHORTSCALARNAME::operator/=(ScalarT scalar) {
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        _data[i] /= scalar;
+    }
+    return *this;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME::FloatingPointScalarT  CLASSNAMEDIMENSIONSHORTSCALARNAME::dot(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const {
+    FloatingPointScalarT result = 0.0f;
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        result += _data[i]*v._data[i];
+    }
+    return result;
+}
+CLASSNAMEDIMENSIONSHORTSCALARNAME::FloatingPointScalarT  CLASSNAMEDIMENSIONSHORTSCALARNAME::squaredNorm() const {
+    return this->dot(*this);
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME::FloatingPointScalarT  CLASSNAMEDIMENSIONSHORTSCALARNAME::norm() const {
+    return std::sqrt(this->dot(*this));
+}
+
+
+void CLASSNAMEDIMENSIONSHORTSCALARNAME::normalize() 
+{
+    (*this) /= this->norm();
+}
+CLASSNAMEDIMENSIONSHORTSCALARNAME CLASSNAMEDIMENSIONSHORTSCALARNAME::normalized() const 
+{
+    auto result(*this); 
+    result /= result.norm();
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME CLASSNAMEDIMENSIONSHORTSCALARNAME::cwiseProduct(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const {
+    auto result = CLASSNAMEDIMENSIONSHORTSCALARNAME();
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        result[i] = _data[i] * v._data[i];
+    }
+    return result;
+}
+CLASSNAMEDIMENSIONSHORTSCALARNAME CLASSNAMEDIMENSIONSHORTSCALARNAME::cwiseQuotient(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const {
+    auto result = CLASSNAMEDIMENSIONSHORTSCALARNAME();
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        result[i] = _data[i] / v._data[i];
+    }
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME CLASSNAMEDIMENSIONSHORTSCALARNAME::cwiseMax(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const {
+    auto result = CLASSNAMEDIMENSIONSHORTSCALARNAME();
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        result[i] = std::max(_data[i], v._data[i]);
+    }
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME CLASSNAMEDIMENSIONSHORTSCALARNAME::cwiseMin(const CLASSNAMEDIMENSIONSHORTSCALARNAME & v) const {
+    auto result = CLASSNAMEDIMENSIONSHORTSCALARNAME();
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        result[i] = std::min(_data[i], v._data[i]);
+    }
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME CLASSNAMEDIMENSIONSHORTSCALARNAME::cwiseAbs() const {
+    auto result = CLASSNAMEDIMENSIONSHORTSCALARNAME();
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        auto v = static_cast<FloatingPointScalarT>(_data[i]);
+        result[i] = std::abs(v);
+    }
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME CLASSNAMEDIMENSIONSHORTSCALARNAME::cwiseSqrt() const {
+    auto result = CLASSNAMEDIMENSIONSHORTSCALARNAME();
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        result[i] = std::sqrt(_data[i]);
+    }
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME::ScalarT CLASSNAMEDIMENSIONSHORTSCALARNAME::minCoeff() const {
+    auto result = std::numeric_limits<ScalarT>::max();
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        result = min(result, _data[i]);
+    }
+    return result;
+}
+
+CLASSNAMEDIMENSIONSHORTSCALARNAME::ScalarT CLASSNAMEDIMENSIONSHORTSCALARNAME::maxCoeff() const {
+    auto result = std::numeric_limits<ScalarT>::min();
+    for(size_t i = 0; i < DIMENSION; ++i) {
+        result = max(result, _data[i]);
+    }
+    return result;
+}
+ 
+
+
 )";
 
 const char *header_getter_decl = R"(
@@ -162,15 +336,15 @@ int main(int argc, char** argv)
     {
         auto classname = {"Vector"};
         auto dimensions = {1,2,3,4};
-        auto scalar = std::map<std::string, std::string>{{{"float", "f"}, {"double","d"}, {"int", "i"}}};
+        auto scalar = std::vector<std::tuple<std::string, std::string, std::string>>{{"float", "f", "float"}, {"double","d", "double"}, {"int", "i", "double"}};
         auto methods = std::vector<std::vector<std::string>>{{{"x"},{"x","y"},{"x","y","z"},{"x","y","z","w"}}};
         auto unitMethods = std::vector<std::vector<std::string>>{{{"UnitX"},{"UnitX","UnitY"},{"UnitX","UnitY","UnitZ"},{"UnitX","UnitY","UnitZ","UnitW"}}};
         auto pathPrefix = std::string{"elm/"};
         for (auto & name : classname) {
                 for (auto &pair : scalar) {
             for (auto &d : dimensions) {
-                    auto scalarType = pair.first;
-                    auto scalarShortname = pair.second;
+                    std::string scalarType, scalarShortname,FloatingPointScalarType;
+                    tie(scalarType, scalarShortname, FloatingPointScalarType) = pair;
 
                     auto headerPath = pathPrefix + name + to_string(d) + scalarShortname + ".h";
                     ofstream headerOut;
@@ -185,6 +359,7 @@ int main(int argc, char** argv)
                         pp = find_all_replace(pp, "DIMENSION",to_string(d));
                         pp = find_all_replace(pp, "SHORTSCALARNAME",scalarShortname);
                         pp = find_all_replace(pp, "SCALAR",scalarType);
+                        pp = find_all_replace(pp, "FLOATINGTYPENAME", FloatingPointScalarType);
                         ss << pp;
                    };
 
@@ -215,6 +390,7 @@ int main(int argc, char** argv)
                         auto gg = find_all_replace(cpp_getter_decl,"GETTERNAME",entry);
                         gg = find_all_replace(gg, "CLASSNAME", name);
                         gg = find_all_replace(gg, "DIMENSION",to_string(d));
+                        gg = find_all_replace(gg, "SHORTSCALARNAME",scalarShortname);
                         gg = find_all_replace(gg, "SHORTSCALARNAME",scalarShortname);
                         gg = find_all_replace(gg, "DIM", to_string(i));
                         cppOut << gg;
