@@ -24,6 +24,8 @@ std::string find_all_replace(const std::string & temp, const std::string & key, 
 }
 
 const char *header_header = R"(
+#include <array>
+
 namespace fiftythree 
 {
 namespace el
@@ -32,19 +34,19 @@ class CLASSNAMEDIMENSIONSHORTSCALARNAME
 {
     // Aliases
     using ScalarT = SCALAR;
-    constexpr size_t Dimension = DIMENSION;
+    static constexpr size_t Dimension = DIMENSION;
 
     // Storage
     std::array<ScalarT, Dimension> _data;
 
     // Ctors Dtors etc.
     CLASSNAMEDIMENSIONSHORTSCALARNAME() = default;
-    CLASSNAMEDIMENSIONSHORTSCALARNAME(const & CLASSNAMEDIMENSIONSHORTSCALARNAME) = default;
-    CLASSNAMEDIMENSIONSHORTSCALARNAME& operator=(const & CLASSNAMEDIMENSIONSHORTSCALARNAME) = default;
+    CLASSNAMEDIMENSIONSHORTSCALARNAME(const CLASSNAMEDIMENSIONSHORTSCALARNAME & ) = default;
+    CLASSNAMEDIMENSIONSHORTSCALARNAME& operator=(const CLASSNAMEDIMENSIONSHORTSCALARNAME & ) = default;
     CLASSNAMEDIMENSIONSHORTSCALARNAME& operator=(CLASSNAMEDIMENSIONSHORTSCALARNAME&&) = default;   
     ~CLASSNAMEDIMENSIONSHORTSCALARNAME() = default;
 
-    T* data(); 
+    ScalarT* data(); 
     explicit CLASSNAMEDIMENSIONSHORTSCALARNAME(const ScalarT * data);
 
 )";
@@ -56,6 +58,8 @@ const char *header_footer = R"(
 
 
 const char* cpp_header = R"(
+#include "CLASSNAMEDIMENSIONSHORTSCALARNAME.h"
+
 namespace fiftythree 
 {
 namespace el
@@ -86,6 +90,13 @@ return _data[DIM];
 }
 )";
 
+const char* cpp_footer = R"(
+}
+}    
+)";
+
+
+
 
 
 
@@ -99,7 +110,6 @@ int main(int argc, char** argv)
         auto dimensions = {1,2,3,4};
         auto scalar = std::map<std::string, std::string>{{{"float", "f"}, {"double","d"}, {"int", "i"}}};
         auto methods = std::vector<std::vector<std::string>>{{{"x"},{"x","y"},{"x","y","z"},{"x","y","z","w"}}};
-
 
         for (auto & name : classname) {
                 for (auto &pair : scalar) {
@@ -142,6 +152,7 @@ int main(int argc, char** argv)
                         cppOut << gg;
                    }
                    headerOut.close();
+                   cppOut << cpp_footer;
                    cppOut.close();
                 }
             }
