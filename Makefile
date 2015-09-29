@@ -4,7 +4,7 @@ CXX=c++
 LD=c++
 IFLAGS= -I/usr/include/ -I/usr/local/include
 # Install boost via homebrew 
-LIBS= -L/usr/lib -L/usr/local/lib -lm -lc++  -lboost_timer-mt -lboost_system-mt
+LIBS= -L/usr/lib -L/usr/local/lib -lm -lc++  
 
 #CFLAGS=  -g -D_DEBUG
 CFLAGS=   -O3 -std=c++14 -stdlib=libc++

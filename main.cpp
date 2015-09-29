@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <exception>
-#include <boost/foreach.hpp>
 #include <cmath>
 #include <algorithm>
 #include <functional>
@@ -47,6 +46,7 @@ class CLASSNAMEDIMENSIONSHORTSCALARNAME
 
     T* data(); 
     explicit CLASSNAMEDIMENSIONSHORTSCALARNAME(const ScalarT * data);
+
 )";
 const char *header_footer = R"(
 };
@@ -72,6 +72,20 @@ CLASSNAMEDIMENSIONSHORTSCALARNAME::CLASSNAMEDIMENSIONSHORTSCALARNAME(const CLASS
 }    
 )";
 
+const char *header_getter_decl = R"(
+    ScalarT& GETTERNAME();
+    const ScalarT& GETTERNAME() const;
+)";
+
+const char *cpp_getter_decl = R"(
+CLASSNAMEDIMENSIONSHORTSCALARNAME::ScalarT& CLASSNAMEDIMENSIONSHORTSCALARNAME::GETTERNAME() {
+return _data[DIM];
+}
+const CLASSNAMEDIMENSIONSHORTSCALARNAME::ScalarT& CLASSNAMEDIMENSIONSHORTSCALARNAME::GETTERNAME() const{
+return _data[DIM];
+}
+)";
+
 
 
 
@@ -88,8 +102,8 @@ int main(int argc, char** argv)
 
 
         for (auto & name : classname) {
-            for (auto &d : dimensions) {
                 for (auto &pair : scalar) {
+            for (auto &d : dimensions) {
                     auto scalarType = pair.first;
                     auto scalarShortname = pair.second;
 
@@ -100,12 +114,25 @@ int main(int argc, char** argv)
                         pp = find_all_replace(pp, "SCALAR",scalarType);
                         cout << pp;
                    };
+
                    apply(header_header);
-                   for(auto i = 0; i < dimensions.size(); ++i) {
-                        
+                   auto & l  = methods[d - 1];
+                   for(int i = 0 ; i < l.size(); ++i) {
+                       auto entry = l[i];
+                        auto gg = find_all_replace(header_getter_decl, "GETTERNAME",entry);
+                        cout << gg;
                    }
                    apply(header_footer);
                    apply(cpp_header);
+                   for(int i = 0 ; i < l.size(); ++i) {
+                       auto entry = l[i];
+                        auto gg = find_all_replace(cpp_getter_decl,"GETTERNAME",entry);
+                        gg = find_all_replace(gg, "CLASSNAME", name);
+                        gg = find_all_replace(gg, "DIMENSION",to_string(d));
+                        gg = find_all_replace(gg, "SHORTSCALARNAME",scalarShortname);
+                        gg = find_all_replace(gg, "DIM", to_string(i));
+                        cout << gg;
+                   }
                 }
             }
         }
