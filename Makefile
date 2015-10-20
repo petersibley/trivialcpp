@@ -5,7 +5,7 @@ LD=c++
 IFLAGS= -I/usr/include/ -I/usr/local/include
 LIBS= -L/usr/lib -L/usr/local/lib -lm -lc++ 
 #CFLAGS=  -g -D_DEBUG
-CFLAGS=   -O3 -std=c++11 -stdlib=libc++
+CFLAGS=   -O3 -std=c++14 -stdlib=libc++
 
 PROGRAM=test
 
